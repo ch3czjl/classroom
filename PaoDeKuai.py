@@ -13,13 +13,14 @@ heitao = shengchengpai('hongtao')
 fangkuai = shengchengpai('ho_fangkuai')
 hua = shengchengpai('ho_caohua')
 pai = hongtao + heitao + fangkuai + hua
-erb = ('er','heitao')
+erb = (16,'er,heitao')
 pai.append(erb)
-ab = ('a','heitao')
+#为了让A 可以形成顺子，把A当成14
+ab = (14,'A,heitao')
 pai.append(ab)
-ac = ('a','fangkuai')
+ac = (14,'A,fangkuai')
 pai.append(ac)
-ad = ('a','caohua')
+ad = (14,'A,caohua')
 pai.append(ad)
 # print pai,len(pai)
 
@@ -155,90 +156,360 @@ def Find_Zha(play):
 # zha = Find_Zha(play1)
 # print zha
 
+#顺子,我也不知道怎么搞的，就搞出顺子了。我其实并不知道自己的思路！反正就是一直不断调试，头晕不想回头研究怎么搞出来的。
+#这里就不注释了大概是这样的。
+#
+def Find_Shunzi(play):
+    list_shun1 = []
+    list_shun2 = []
+    list_shun3 = []
+    list_shun4 = []
+    list_shun5 = []
+    # list_shun6 = []
+    for x in play:
+        # print x[0]
+        list_shun1.append(x[0])
+    list_shun1.sort(reverse=True)
+    # print list_shun1
+    for x in range(len(list_shun1)-1):
+        # print x
+        for y in range(len(list_shun1)-1):
+            # print list_shun1
+            # print list_shun1[x]
+            # print type(list_shun1[x])
+            if ((int(list_shun1[x]) - int(list_shun1[y])) == 1):
+                if list_shun1[x] not in list_shun2:
+                    list_shun2.append(list_shun1[x])
+                if list_shun1[y] not in list_shun2:
+                    list_shun2.append(list_shun1[y])
+                continue
+    for x in range(len(list_shun2)-1):
+        if ((list_shun2[x]) - (list_shun2[x+1]) == 1):
+            if list_shun2[x] not in list_shun3:
+                    list_shun3.append(list_shun2[x])
+            if list_shun2[x+1] not in list_shun3:
+                list_shun3.append(list_shun2[x+1])
+        else:
+            break
+    if (len(list_shun3) > 4):
+        list_shun4 = list_shun3
+    else:
+        print 'not shunzi'
+        return
+    list_shun4.sort(reverse=False)
+
+    print list_shun4
+    #加入花色，去掉重复花色。乱！
+    x = 0
+    z = list_shun4[x]
+    for k in play:
+        if k[0] == z:
+            list_shun5.append(k)
+            z = z + 1
+            x = x + 1
+        if x > len(list_shun4):
+            break
+    for l in list_shun5:
+        play.remove(l)
+    return list_shun5
+
+# shunzi = Find_Shunzi(play1)
+# print shunzi
+
+#连对
+def Find_Liandui(play):
+    temp_list = []
+    list_duizi = Find_DuiZi(play)
+    print list_duizi,len(list_duizi)
+
+    if (len(list_duizi) > 5):
+        for x in range(0,len(list_duizi)-4,2):
+            # print list_duizi[x][0],list_duizi[x+2][0],list_duizi[x+4][0]
+            if ((list_duizi[x][0] - list_duizi[x+2][0]) == (list_duizi[x+2][0] - list_duizi[x+4][0]) == -1):
+                temp_list.append(list_duizi[x])
+                temp_list.append(list_duizi[x+1])
+                temp_list.append(list_duizi[x+2])
+                temp_list.append(list_duizi[x+3])
+                temp_list.append(list_duizi[x+4])
+                temp_list.append(list_duizi[x+5])
+    if len(temp_list) == 0:
+        return
+    else:
+        for z in temp_list:
+            play.remove(z)
+        return temp_list
+
+liandui = Find_Liandui(play1)
+print liandui
+
+#
+
+
+
+
+
+
+
+
 ##吃牌规则，针对单对子三等不同的出牌进行吃牌。
 
 def ChiPai(Chu_De_pai,play):
     temp_list = []
+    temp_zha = Find_Zha(play)
+    # print 'zha',temp_zha
     # print Chu_De_Pai[0][0]
     #len(Chu_De_pai) == 1 时代表 要吃的牌是 单牌
     if (len(Chu_De_Pai) == 1 ):
+        #从单的列表中找一个大过的牌出
         temp_play = Find_Dan(play)
         # print temp_play
-        if (len(temp_play) > 1):
+        if (len(temp_play) > 0):
             for i in temp_play:
                 if i[0] > Chu_De_Pai[0][0]:
                     # print i
-                    return i
                     play.remove(i)
-                    break
-                else:
-                    temp_play = Find_Zha(play)
-                    return temp_play
-                    for x in temp_play:
-                        play.remove(x)
+                    return i
+
+        #单牌列表里没有大过的，就从整副牌找个能大过的牌吃他
+        for i in play:
+            if i[0] > Chu_De_Pai[0][0]:
+                play.remove(i)
+                return i
+
+        #单牌里也没能大过他，如果有炸，就炸他！
+        if (len(temp_zha) != 0):
+            # print 'youzha!!!'
+            for x in temp_zha:
+                play.remove(x)
+                break
+            return temp_zha
         else:
-            for i in play:
-                if i[0] > Chu_De_Pai[0][0]:
-                    return i
-                    play.remove(i)
-                    break
-                else:
-                    temp_play = Find_Zha(play)
-                    return temp_play
-                    for x in temp_play:
-                        play.remove(x)
-
-
+            print 'yaobuqi'
 
 
     #len(Chu_De_pai) == 2 时代表 要吃的牌是 对子
     elif (len(Chu_De_Pai) == 2):
         # print 2,Chu_De_Pai[0][0],len(Find_DuiZi(play)),Find_DuiZi(play)
+        # print 'panduan chulai shi duizi'
         temp_list_duizi = Find_DuiZi(play)
+        temp_list_San = Find_San(play)
+        ##print 'duizi liebiao:',temp_list_duizi
         # print Chu_De_Pai[0][0],temp_list_duizi
-        for x in range(0,len(temp_list_duizi),2):
-            if (temp_list_duizi[x][0] > Chu_De_Pai[0][0]):
-                temp_list.append(temp_list_duizi[x])
-                temp_list.append(temp_list_duizi[x+1])
-                return temp_list
-                for x in temp_list:
+        if (len(temp_list_duizi) != 0):
+            for x in range(0,len(temp_list_duizi),2):
+                if (temp_list_duizi[x][0] > Chu_De_Pai[0][0]):
+                    temp_list.append(temp_list_duizi[x])
+                    temp_list.append(temp_list_duizi[x+1])
+                    for x in temp_list:
+                        play.remove(x)
+                    return temp_list
+        if (len(temp_list_San) != 0):
+            for x in range(0,len(temp_list_San),3):
+                if (temp_list_San[x][0] > Chu_De_Pai[0][0]):
+                    temp_list.append(temp_list_San[x])
+                    temp_list.append(temp_list_San[x+1])
+                    print 'chai san',temp_list_San[x][0],temp_list_San[x+1][0]
+                    for y in temp_list:
+                        play.remove(y)
+                    return temp_list
+        if (len(temp_zha) != 0):
+            for x in temp_zha:
+                play.remove(x)
+            return temp_zha
+        else:
+            print 'yaoquqi'
+
+    ## 炸
+    elif ((len(Chu_De_Pai) == 4) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] == Chu_De_Pai[3][0])):
+        if (len(temp_zha) != 0):
+            if ((temp_zha[0][0]) > (Chu_De_Pai[0][0])):
+                for x in temp_zha:
                     play.remove(x)
-                break
+                return temp_zha
+            else:
+                print 'yaobuqi'
+        else:
+            print 'yaobuqi'
+
+    # #三带一
+    elif (len(Chu_De_Pai) == 4) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] != Chu_De_Pai[3][0]):
+        temp_list_San = Find_San(play)
+        temp_dan = Find_Dan(play)
+        if (len(temp_list_San) != 0):
+            for x in range(0,len(temp_list_San),3):
+                if (temp_list_San[x][0] > Chu_De_Pai[x][0]):
+                    temp_list.append(temp_list_San[x])
+                    temp_list.append(temp_list_San[x+1])
+                    temp_list.append(temp_list_San[x+2])
+                    temp_list.append(temp_dan[0])
+                    for y in temp_list:
+                        play.remove(y)
+                    return temp_list
+        elif (len(temp_zha) != 0):
+            temp_list = temp_zha
+            for x in temp_list:
+                play.remove(x)
+            return temp_list
+        else:
+            print 'yaobuqi'
+    #三带二
+    elif (len(Chu_De_Pai) == 5) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] != Chu_De_Pai[3][0]):
+        temp_list_San = Find_San(play)
+        temp_duizi = Find_DuiZi(play)
+        if (len(temp_list_San) != 0):
+            for x in range(0,len(temp_list_San),3):
+                if (temp_list_San[x][0] > Chu_De_Pai[x][0]):
+                    temp_list.append(temp_list_San[x])
+                    temp_list.append(temp_list_San[x+1])
+                    temp_list.append(temp_list_San[x+2])
+                    temp_list.append(temp_duizi[0])
+                    temp_list.append(temp_duizi[1])
+                    for y in temp_list:
+                        play.remove(y)
+                    return temp_list
+        elif (len(temp_zha) != 0):
+            temp_list = temp_zha
+            for x in temp_list:
+                play.remove(x)
+            return temp_list
+        else:
+            print 'yaobuqi'
+
+
+    #四带二。四带二可以被炸吃。
+    elif ((len(Chu_De_Pai) == 6) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] == Chu_De_Pai[3][0])):
+        temp_dan = Find_Dan(play)
+        print 'yunxing1'
+        if((len(temp_zha) != 0) and (len(temp_dan) > 1)):
+            print 'yunxing2'
+            for x in range(0,len(temp_zha),4):
+                if ((temp_zha[x][0]) > (Chu_De_Pai[0][0])):
+                    print 'yunxing3'
+                    temp_list.append(temp_zha[x])
+                    temp_list.append(temp_zha[x+1])
+                    temp_list.append(temp_zha[x+2])
+                    temp_list.append(temp_zha[x+3])
+                    temp_list.append(temp_dan[0])
+                    temp_list.append(temp_dan[1])
+                    for y in temp_list:
+                        play.remove(y)
+                    return temp_list
+
+                #如果四带二不比他大，就直接炸他
+                else:
+                    print 'yunxing4'
+                    temp_list.append(temp_zha[0])
+                    temp_list.append(temp_zha[1])
+                    temp_list.append(temp_zha[2])
+                    temp_list.append(temp_zha[3])
+                    for y in temp_list:
+                            play.remove(y)
+                    return temp_list
+
+        #如果单牌不够，直接炸他
+        elif((temp_zha != 0 ) and (len(temp_dan) <= 1)):
+            print 'yunxing5'
+            temp_list.append(temp_zha[0])
+            temp_list.append(temp_zha[1])
+            temp_list.append(temp_zha[2])
+            temp_list.append(temp_zha[3])
+            for y in temp_list:
+                    play.remove(y)
+            return temp_list
+        else:
+            print 'yaobuqi'
+
+    #四带两对子。四带两对子可以被炸吃。
+    elif ((len(Chu_De_Pai) == 8) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] == Chu_De_Pai[3][0])):
+        temp_duizi = Find_DuiZi(play)
+        print 'yunxing1'
+        if((len(temp_zha) != 0) and (len(temp_duizi) > 3)):
+            print 'yunxing2'
+            for x in range(0,len(temp_zha),4):
+                if ((temp_zha[x][0]) > (Chu_De_Pai[0][0])):
+                    print 'yunxing3'
+                    temp_list.append(temp_zha[x])
+                    temp_list.append(temp_zha[x+1])
+                    temp_list.append(temp_zha[x+2])
+                    temp_list.append(temp_zha[x+3])
+                    temp_list.append(temp_duizi[0])
+                    temp_list.append(temp_duizi[1])
+                    temp_list.append(temp_duizi[2])
+                    temp_list.append(temp_duizi[3])
+                    for y in temp_list:
+                        play.remove(y)
+                    return temp_list
+
+                #如果四带两对不比他大，就直接炸他
+                else:
+                    print 'yunxing4'
+                    temp_list.append(temp_zha[0])
+                    temp_list.append(temp_zha[1])
+                    temp_list.append(temp_zha[2])
+                    temp_list.append(temp_zha[3])
+                    for y in temp_list:
+                            play.remove(y)
+                    return temp_list
+
+        #如果对子不够，直接炸他
+        elif((len(temp_zha) != 0 ) and (len(temp_duizi) <= 3)):
+            print 'duizi bugou!'
+            temp_list.append(temp_zha[0])
+            temp_list.append(temp_zha[1])
+            temp_list.append(temp_zha[2])
+            temp_list.append(temp_zha[3])
+            for y in temp_list:
+                    play.remove(y)
+            return temp_list
+        else:
+            print 'yaobuqi'
 
 
 
-    elif (len(Chu_De_Pai) == 3):
-        for t in Find_San(play):
-            if t[0] > Chu_De_Pai:
-                temp_list.append(t)
-                temp_list.append(t+1)
-                temp_list.append(t+2)
-                return temp_list
-                play.remove(temp_list)
-                break
-    else:
-        for t in Find_Zha(play):
-            if t[0] > Chu_De_Pai:
-                temp_list.append(t)
-                temp_list.append(t+1)
-                temp_list.append(t+2)
-                temp_list.append(t+3)
-                return temp_list
-                play.remove(temp_list)
-                break
+
+
+
+
+
+
+
+    # elif (len(Chu_De_Pai) == 3):
+    #     for t in Find_San(play):
+    #         if t[0] > Chu_De_Pai:
+    #             temp_list.append(t)
+    #             temp_list.append(t+1)
+    #             temp_list.append(t+2)
+    #             return temp_list
+    #             play.remove(temp_list)
+    #             break
+    # else:
+    #     for t in Find_Zha(play):
+    #         if t[0] > Chu_De_Pai:
+    #             temp_list.append(t)
+    #             temp_list.append(t+1)
+    #             temp_list.append(t+2)
+    #             temp_list.append(t+3)
+    #             return temp_list
+    #             play.remove(temp_list)
+    #             break
 
     # print 'pass chibuliao'
 
 
 
-print play1
+# print play1
 # print Find_DuiZi(play1)
-Chu_De_Pai = [(3,'heitao'),(3,'hongtao')]
-chi = ChiPai(Chu_De_Pai,play1)
-you = Find_Zha(play1)
-print you
-print chi
-print play1
+#调试吃牌
+# zha = Find_Zha(play1)
+# if zha:
+#     print 'youzha!',zha
+# else:
+#     print 'meiyouzha!'
+# Chu_De_Pai = [(3,'heitao'),(3,'hongtao'),(3,'ho_caohua'),(3,'ho_fangkuai'),(4,'heitao'),(4,'hongtao'),(5,'heitao'),(5,'hongtao')]
+# chi = ChiPai(Chu_De_Pai,play1)
+#
+# print chi
+# print play1
 
 
 #出牌规则
