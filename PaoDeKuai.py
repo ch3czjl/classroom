@@ -198,7 +198,7 @@ def Find_Shunzi(play):
         return
     list_shun4.sort(reverse=False)
 
-    print list_shun4
+    # print list_shun4
     #加入花色，去掉重复花色。乱！
     x = 0
     z = list_shun4[x]
@@ -209,8 +209,6 @@ def Find_Shunzi(play):
             x = x + 1
         if x > len(list_shun4):
             break
-    for l in list_shun5:
-        play.remove(l)
     return list_shun5
 
 # shunzi = Find_Shunzi(play1)
@@ -220,7 +218,7 @@ def Find_Shunzi(play):
 def Find_Liandui(play):
     temp_list = []
     list_duizi = Find_DuiZi(play)
-    print list_duizi,len(list_duizi)
+    # print list_duizi,len(list_duizi)
 
     if (len(list_duizi) > 5):
         for x in range(0,len(list_duizi)-4,2):
@@ -235,20 +233,32 @@ def Find_Liandui(play):
     if len(temp_list) == 0:
         return
     else:
-        for z in temp_list:
-            play.remove(z)
         return temp_list
 
-liandui = Find_Liandui(play1)
-print liandui
-
-#
+# liandui = Find_Liandui(play1)
+# print liandui
 
 
+list_feiji = []
+#飞机
+def Find_feiji(play):
+    temp_san = Find_San(play)
+    temp_list = []
+    # print temp_san
+    if (len(temp_san) > 3):
+        for x in range(0,len(temp_san)-3,3):
+            if ((temp_san[x][0]) - (temp_san[x+3][0]) == -1):
+                temp_list.append(temp_san[x])
+                temp_list.append(temp_san[x+1])
+                temp_list.append(temp_san[x + 2])
+                temp_list.append(temp_san[x + 3])
+                temp_list.append(temp_san[x + 4])
+                temp_list.append(temp_san[x + 5])
+                return temp_list
 
-
-
-
+# play4 = [(3,'hongtao'),(3,'heitao'),(3,'ho_fangkuai'),(4,'heitao'),(4,'hongtao'),(4,'ho_fangkuai'),(5,'heitao'),(6,'heitao')]
+# feiji = Find_feiji(play4)
+# print feiji
 
 
 ##吃牌规则，针对单对子三等不同的出牌进行吃牌。
@@ -256,6 +266,12 @@ print liandui
 def ChiPai(Chu_De_pai,play):
     temp_list = []
     temp_zha = Find_Zha(play)
+    if temp_zha:
+        len_zha = len(temp_zha)
+        print 'youzha!'
+    else:
+        len_zha = 0
+
     # print 'zha',temp_zha
     # print Chu_De_Pai[0][0]
     #len(Chu_De_pai) == 1 时代表 要吃的牌是 单牌
@@ -463,39 +479,127 @@ def ChiPai(Chu_De_pai,play):
             return temp_list
         else:
             print 'yaobuqi'
+    #顺子
+    elif ((len(Chu_De_Pai) > 4) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[1][0]) == -1)):
+        temp_shun = Find_Shunzi(play)
+        len_Chu = len(Chu_De_Pai)
+        temp_list = []
+        len_shun = 0
+        if temp_shun:
+            len_shun = len(temp_shun)
+        else:
+            len_shun = 0
+        if (len_shun >= len_Chu):
+            for x in range(0,len(temp_shun)):
+                if (((temp_shun[x][0]) > (Chu_De_Pai[0][0])) and (len(temp_shun)-x+1) > len_Chu):
+                    for y in range(x,len_Chu+1):
+                        temp_list.append(temp_shun[y])
+
+                    print temp_list
+                    # for z in temp_list:
+                    #     # print z
+                    #     play.remove(z)
+                    return temp_list
+        elif (len(temp_zha) != 0):
+            # print 'youzha!1'
+            for t in temp_zha:
+                play.remove(t)
+            # print temp_zha
+            return temp_zha
+        else:
+            print 'yaobuqi'
+
+    #连队
+    elif ((len(Chu_De_Pai) > 5) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[2][0]) == -1)):
+        temp_liandui = Find_Liandui(play)
+        temp_list = []
+        if temp_liandui:
+            len_liandui = len(temp_liandui)
+        else:
+            len_liandui = 0
+        if len_liandui:
+            if ((temp_liandui[0][0]) > (Chu_De_Pai[0][0])):
+                temp_list = temp_liandui
+                # print temp_list
+                # print play
+                for x in temp_list:
+                    # print x
+                    play.remove(x)
+                return temp_list
+        elif len_zha:
+            for x in temp_zha:
+                play.remove(x)
+            return temp_zha
+        else:
+            print 'yaobuqi'
+
+    #飞机带两个单
+    elif ((len(Chu_De_Pai) == 8) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[3][0]) == -1)):
+        temp_feiji = Find_feiji(play)
+        temp_dan = Find_Dan(play)
+        temp_list = []
+        if temp_feiji:
+            len_feiji = len(temp_feiji)
+        else:
+            len_feiji = 0
+        if temp_dan:
+            len_dan = len(temp_dan)
+        else:
+            len_dan = 0
+        if ((len_feiji) and (len_dan > 1)):
+            if ((temp_feiji[0][0]) > (Chu_De_Pai[0][0])):
+                temp_list = temp_feiji
+                temp_list.append(temp_dan[0])
+                temp_list.append(temp_dan[1])
+                # print temp_list
+                # print play
+                for x in temp_list:
+                    # print x
+                    play.remove(x)
+                return temp_list
+        elif len_zha:
+            for x in temp_zha:
+                play.remove(x)
+            return temp_zha
+        else:
+            print 'yaobuqi'
+
+    #飞机带两对子
+    elif ((len(Chu_De_Pai) == 10) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[3][0]) == -1)):
+        temp_feiji = Find_feiji(play)
+        temp_duizi = Find_DuiZi(play)
+        temp_list = []
+        if temp_feiji:
+            len_feiji = len(temp_feiji)
+        else:
+            len_feiji = 0
+        if temp_duizi:
+            len_duizi = len(temp_duizi)
+        else:
+            len_duizi = 0
+        if ((len_feiji) and (len_duizi > 1)):
+            if ((temp_feiji[0][0]) > (Chu_De_Pai[0][0])):
+                temp_list = temp_feiji
+                temp_list.append(temp_duizi[0])
+                temp_list.append(temp_duizi[1])
+                temp_list.append(temp_duizi[2])
+                temp_list.append(temp_duizi[3])
+                # print temp_list
+                # print play
+                for x in temp_list:
+                    # print x
+                    play.remove(x)
+                return temp_list
+        elif len_zha:
+            for x in temp_zha:
+                play.remove(x)
+            return temp_zha
+        else:
+            print 'yaobuqi'
 
 
 
-
-
-
-
-
-
-
-    # elif (len(Chu_De_Pai) == 3):
-    #     for t in Find_San(play):
-    #         if t[0] > Chu_De_Pai:
-    #             temp_list.append(t)
-    #             temp_list.append(t+1)
-    #             temp_list.append(t+2)
-    #             return temp_list
-    #             play.remove(temp_list)
-    #             break
-    # else:
-    #     for t in Find_Zha(play):
-    #         if t[0] > Chu_De_Pai:
-    #             temp_list.append(t)
-    #             temp_list.append(t+1)
-    #             temp_list.append(t+2)
-    #             temp_list.append(t+3)
-    #             return temp_list
-    #             play.remove(temp_list)
-    #             break
-
-    # print 'pass chibuliao'
-
-
+play5 = [(4,'heitao'),(4,'hongtao'),(4,'heitao'),(5,'heitao'),(5,'hongtao'),(5,'heitao'),(8,'heitao'),(8,'heitao'),(10,'heitao'),(10,'hongtao')]
 
 # print play1
 # print Find_DuiZi(play1)
@@ -505,10 +609,11 @@ def ChiPai(Chu_De_pai,play):
 #     print 'youzha!',zha
 # else:
 #     print 'meiyouzha!'
-# Chu_De_Pai = [(3,'heitao'),(3,'hongtao'),(3,'ho_caohua'),(3,'ho_fangkuai'),(4,'heitao'),(4,'hongtao'),(5,'heitao'),(5,'hongtao')]
-# chi = ChiPai(Chu_De_Pai,play1)
-#
-# print chi
+# print play5
+Chu_De_Pai = [(3,'heitao'),(3,'hongtao'),(3,'ho_caohua'),(4,'ho_fangkuai'),(4,'heitao'),(4,'heitao'),(5,'heitao'),(5,'heitao'),(6,'heitao'),(6,'heitao')]
+chi = ChiPai(Chu_De_Pai,play5)
+print play5
+print chi
 # print play1
 
 
