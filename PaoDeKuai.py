@@ -37,7 +37,7 @@ play3 = sorted(pai[32:])
 # print 'play2 is %s' %play2
 # print 'play3 is %s' %play3
 
-Chu_De_Pai = []
+
 
 #规则1，比大小
 def BiDaXiao(a,b):
@@ -194,7 +194,7 @@ def Find_Shunzi(play):
     if (len(list_shun3) > 4):
         list_shun4 = list_shun3
     else:
-        print 'not shunzi'
+        # print 'not shunzi'
         return
     list_shun4.sort(reverse=False)
 
@@ -263,7 +263,7 @@ def Find_feiji(play):
 
 ##吃牌规则，针对单对子三等不同的出牌进行吃牌。
 
-def ChiPai(Chu_De_pai,play):
+def ChiPai(temp_list_chu,play):
     temp_list = []
     temp_zha = Find_Zha(play)
     if temp_zha:
@@ -271,24 +271,30 @@ def ChiPai(Chu_De_pai,play):
         print 'youzha!'
     else:
         len_zha = 0
-
+    if temp_list_chu:
+        len_chudepai = len(temp_list_chu)
+    else:
+        len_chudepai = 0
+    if (len_chudepai) == 0:
+        return
     # print 'zha',temp_zha
-    # print Chu_De_Pai[0][0]
-    #len(Chu_De_pai) == 1 时代表 要吃的牌是 单牌
-    if (len(Chu_De_Pai) == 1 ):
+    # print temp_list_chu[0][0]
+    #len(temp_list_chu) == 1 时代表 要吃的牌是 单牌
+    elif (len_chudepai == 1 ):
         #从单的列表中找一个大过的牌出
         temp_play = Find_Dan(play)
         # print temp_play
         if (len(temp_play) > 0):
             for i in temp_play:
-                if i[0] > Chu_De_Pai[0][0]:
+                if i[0] > temp_list_chu[0][0]:
                     # print i
+                    temp_list.append(i)
                     play.remove(i)
-                    return i
+                    return temp_list
 
         #单牌列表里没有大过的，就从整副牌找个能大过的牌吃他
         for i in play:
-            if i[0] > Chu_De_Pai[0][0]:
+            if i[0] > temp_list_chu[0][0]:
                 play.remove(i)
                 return i
 
@@ -300,20 +306,23 @@ def ChiPai(Chu_De_pai,play):
                 break
             return temp_zha
         else:
-            print 'yaobuqi'
+            return
 
 
-    #len(Chu_De_pai) == 2 时代表 要吃的牌是 对子
-    elif (len(Chu_De_Pai) == 2):
-        # print 2,Chu_De_Pai[0][0],len(Find_DuiZi(play)),Find_DuiZi(play)
+    #len(temp_list_chu) == 2 时代表 要吃的牌是 对子
+    elif (len_chudepai == 2):
+        # print 2,temp_list_chu[0][0],len(Find_DuiZi(play)),Find_DuiZi(play)
         # print 'panduan chulai shi duizi'
         temp_list_duizi = Find_DuiZi(play)
         temp_list_San = Find_San(play)
         ##print 'duizi liebiao:',temp_list_duizi
-        # print Chu_De_Pai[0][0],temp_list_duizi
+        # print temp_list_chu[0][0],temp_list_duizi
         if (len(temp_list_duizi) != 0):
             for x in range(0,len(temp_list_duizi),2):
-                if (temp_list_duizi[x][0] > Chu_De_Pai[0][0]):
+                temp_list_duizi_a = temp_list_duizi[x][0]
+                # print temp_list_chu[0]
+                temp_list_chu_a = temp_list_chu[0][0]
+                if (temp_list_duizi_a > temp_list_chu_a):
                     temp_list.append(temp_list_duizi[x])
                     temp_list.append(temp_list_duizi[x+1])
                     for x in temp_list:
@@ -321,39 +330,45 @@ def ChiPai(Chu_De_pai,play):
                     return temp_list
         if (len(temp_list_San) != 0):
             for x in range(0,len(temp_list_San),3):
-                if (temp_list_San[x][0] > Chu_De_Pai[0][0]):
+                if (temp_list_San[x][0] > temp_list_chu[0]):
                     temp_list.append(temp_list_San[x])
                     temp_list.append(temp_list_San[x+1])
                     print 'chai san',temp_list_San[x][0],temp_list_San[x+1][0]
                     for y in temp_list:
                         play.remove(y)
                     return temp_list
-        if (len(temp_zha) != 0):
+        if temp_zha:
+            len_zha = len(temp_zha)
+        else:
+            len_zha = 0
+        if ((len_zha) != 0):
             for x in temp_zha:
                 play.remove(x)
             return temp_zha
         else:
-            print 'yaoquqi'
+            return
+
+
 
     ## 炸
-    elif ((len(Chu_De_Pai) == 4) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] == Chu_De_Pai[3][0])):
+    elif ((len_chudepai == 4) and (temp_list_chu[0][0] == temp_list_chu[1][0] == temp_list_chu[2][0] == temp_list_chu[3][0])):
         if (len(temp_zha) != 0):
-            if ((temp_zha[0][0]) > (Chu_De_Pai[0][0])):
+            if ((temp_zha[0][0]) > (temp_list_chu[0][0])):
                 for x in temp_zha:
                     play.remove(x)
                 return temp_zha
             else:
-                print 'yaobuqi'
+                return
         else:
-            print 'yaobuqi'
+            return
 
     # #三带一
-    elif (len(Chu_De_Pai) == 4) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] != Chu_De_Pai[3][0]):
+    elif (len_chudepai == 4) and (temp_list_chu[0][0] == temp_list_chu[1][0] == temp_list_chu[2][0] != temp_list_chu[3][0]):
         temp_list_San = Find_San(play)
         temp_dan = Find_Dan(play)
         if (len(temp_list_San) != 0):
             for x in range(0,len(temp_list_San),3):
-                if (temp_list_San[x][0] > Chu_De_Pai[x][0]):
+                if (temp_list_San[x][0] > temp_list_chu[x][0]):
                     temp_list.append(temp_list_San[x])
                     temp_list.append(temp_list_San[x+1])
                     temp_list.append(temp_list_San[x+2])
@@ -367,14 +382,14 @@ def ChiPai(Chu_De_pai,play):
                 play.remove(x)
             return temp_list
         else:
-            print 'yaobuqi'
+            return
     #三带二
-    elif (len(Chu_De_Pai) == 5) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] != Chu_De_Pai[3][0]):
+    elif (len_chudepai == 5) and (temp_list_chu[0][0] == temp_list_chu[1][0] == temp_list_chu[2][0] != temp_list_chu[3][0]):
         temp_list_San = Find_San(play)
         temp_duizi = Find_DuiZi(play)
         if (len(temp_list_San) != 0):
             for x in range(0,len(temp_list_San),3):
-                if (temp_list_San[x][0] > Chu_De_Pai[x][0]):
+                if (temp_list_San[x][0] > temp_list_chu[x][0]):
                     temp_list.append(temp_list_San[x])
                     temp_list.append(temp_list_San[x+1])
                     temp_list.append(temp_list_San[x+2])
@@ -389,17 +404,17 @@ def ChiPai(Chu_De_pai,play):
                 play.remove(x)
             return temp_list
         else:
-            print 'yaobuqi'
+            return
 
 
     #四带二。四带二可以被炸吃。
-    elif ((len(Chu_De_Pai) == 6) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] == Chu_De_Pai[3][0])):
+    elif ((len_chudepai == 6) and (temp_list_chu[0][0] == temp_list_chu[1][0] == temp_list_chu[2][0] == temp_list_chu[3][0])):
         temp_dan = Find_Dan(play)
         print 'yunxing1'
         if((len(temp_zha) != 0) and (len(temp_dan) > 1)):
             print 'yunxing2'
             for x in range(0,len(temp_zha),4):
-                if ((temp_zha[x][0]) > (Chu_De_Pai[0][0])):
+                if ((temp_zha[x][0]) > (temp_list_chu[0][0])):
                     print 'yunxing3'
                     temp_list.append(temp_zha[x])
                     temp_list.append(temp_zha[x+1])
@@ -433,16 +448,16 @@ def ChiPai(Chu_De_pai,play):
                     play.remove(y)
             return temp_list
         else:
-            print 'yaobuqi'
+            return
 
     #四带两对子。四带两对子可以被炸吃。
-    elif ((len(Chu_De_Pai) == 8) and (Chu_De_Pai[0][0] == Chu_De_Pai[1][0] == Chu_De_Pai[2][0] == Chu_De_Pai[3][0])):
+    elif ((len_chudepai == 8) and (temp_list_chu[0][0] == temp_list_chu[1][0] == temp_list_chu[2][0] == temp_list_chu[3][0])):
         temp_duizi = Find_DuiZi(play)
         print 'yunxing1'
         if((len(temp_zha) != 0) and (len(temp_duizi) > 3)):
             print 'yunxing2'
             for x in range(0,len(temp_zha),4):
-                if ((temp_zha[x][0]) > (Chu_De_Pai[0][0])):
+                if ((temp_zha[x][0]) > (temp_list_chu[0][0])):
                     print 'yunxing3'
                     temp_list.append(temp_zha[x])
                     temp_list.append(temp_zha[x+1])
@@ -478,27 +493,27 @@ def ChiPai(Chu_De_pai,play):
                     play.remove(y)
             return temp_list
         else:
-            print 'yaobuqi'
+            return
     #顺子
-    elif ((len(Chu_De_Pai) > 4) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[1][0]) == -1)):
+    elif ((len_chudepai > 4) and ((temp_list_chu[0][0]) - (temp_list_chu[1][0]) == -1)):
         temp_shun = Find_Shunzi(play)
-        len_Chu = len(Chu_De_Pai)
+        # len_Chu = len(temp_list_chu)
         temp_list = []
         len_shun = 0
         if temp_shun:
             len_shun = len(temp_shun)
         else:
             len_shun = 0
-        if (len_shun >= len_Chu):
+        if (len_shun >= len_chudepai):
             for x in range(0,len(temp_shun)):
-                if (((temp_shun[x][0]) > (Chu_De_Pai[0][0])) and (len(temp_shun)-x+1) > len_Chu):
-                    for y in range(x,len_Chu+1):
+                if (((temp_shun[x][0]) > (temp_list_chu[0][0])) and ((len(temp_shun))-x+1) > len_chudepai):
+                    for y in range(x,len_shun-1):
                         temp_list.append(temp_shun[y])
 
-                    print temp_list
-                    # for z in temp_list:
-                    #     # print z
-                    #     play.remove(z)
+                    # print temp_list
+                    for z in temp_list:
+                        # print z
+                        play.remove(z)
                     return temp_list
         elif (len(temp_zha) != 0):
             # print 'youzha!1'
@@ -507,10 +522,10 @@ def ChiPai(Chu_De_pai,play):
             # print temp_zha
             return temp_zha
         else:
-            print 'yaobuqi'
+            return
 
     #连队
-    elif ((len(Chu_De_Pai) > 5) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[2][0]) == -1)):
+    elif ((len_chudepai > 5) and ((temp_list_chu[0][0]) - (temp_list_chu[2][0]) == -1)):
         temp_liandui = Find_Liandui(play)
         temp_list = []
         if temp_liandui:
@@ -518,7 +533,7 @@ def ChiPai(Chu_De_pai,play):
         else:
             len_liandui = 0
         if len_liandui:
-            if ((temp_liandui[0][0]) > (Chu_De_Pai[0][0])):
+            if ((temp_liandui[0][0]) > (temp_list_chu[0][0])):
                 temp_list = temp_liandui
                 # print temp_list
                 # print play
@@ -531,10 +546,10 @@ def ChiPai(Chu_De_pai,play):
                 play.remove(x)
             return temp_zha
         else:
-            print 'yaobuqi'
+            return
 
     #飞机带两个单
-    elif ((len(Chu_De_Pai) == 8) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[3][0]) == -1)):
+    elif ((len_chudepai == 8) and ((temp_list_chu[0][0]) - (temp_list_chu[3][0]) == -1)):
         temp_feiji = Find_feiji(play)
         temp_dan = Find_Dan(play)
         temp_list = []
@@ -547,7 +562,7 @@ def ChiPai(Chu_De_pai,play):
         else:
             len_dan = 0
         if ((len_feiji) and (len_dan > 1)):
-            if ((temp_feiji[0][0]) > (Chu_De_Pai[0][0])):
+            if ((temp_feiji[0][0]) > (temp_list_chu[0][0])):
                 temp_list = temp_feiji
                 temp_list.append(temp_dan[0])
                 temp_list.append(temp_dan[1])
@@ -562,10 +577,10 @@ def ChiPai(Chu_De_pai,play):
                 play.remove(x)
             return temp_zha
         else:
-            print 'yaobuqi'
+            return
 
     #飞机带两对子
-    elif ((len(Chu_De_Pai) == 10) and ((Chu_De_Pai[0][0]) - (Chu_De_Pai[3][0]) == -1)):
+    elif ((len_chudepai == 10) and ((temp_list_chu[0][0]) - (temp_list_chu[3][0]) == -1)):
         temp_feiji = Find_feiji(play)
         temp_duizi = Find_DuiZi(play)
         temp_list = []
@@ -578,7 +593,7 @@ def ChiPai(Chu_De_pai,play):
         else:
             len_duizi = 0
         if ((len_feiji) and (len_duizi > 1)):
-            if ((temp_feiji[0][0]) > (Chu_De_Pai[0][0])):
+            if ((temp_feiji[0][0]) > (temp_list_chu[0][0])):
                 temp_list = temp_feiji
                 temp_list.append(temp_duizi[0])
                 temp_list.append(temp_duizi[1])
@@ -595,32 +610,33 @@ def ChiPai(Chu_De_pai,play):
                 play.remove(x)
             return temp_zha
         else:
-            print 'yaobuqi'
+            return
 
 
-
-play5 = [(4,'heitao'),(4,'hongtao'),(4,'heitao'),(5,'heitao'),(5,'hongtao'),(5,'heitao'),(8,'heitao'),(8,'heitao'),(10,'heitao'),(10,'hongtao')]
-
-# print play1
-# print Find_DuiZi(play1)
-#调试吃牌
-# zha = Find_Zha(play1)
-# if zha:
-#     print 'youzha!',zha
-# else:
-#     print 'meiyouzha!'
+# 测试吃牌规则
+# play5 = [(4,'heitao'),(4,'hongtao'),(4,'heitao'),(5,'heitao'),(5,'hongtao'),(5,'heitao'),(8,'heitao'),(8,'heitao'),(10,'heitao'),(10,'hongtao')]
+#
+# # print play1
+# # print Find_DuiZi(play1)
+# #调试吃牌
+# # zha = Find_Zha(play1)
+# # if zha:
+# #     print 'youzha!',zha
+# # else:
+# #     print 'meiyouzha!'
+# # print play5
+# temp_list_chu = [(3,'heitao'),(3,'hongtao'),(3,'ho_caohua'),(4,'ho_fangkuai'),(4,'heitao'),(4,'heitao'),(5,'heitao'),(5,'heitao'),(6,'heitao'),(6,'heitao')]
+# chi = ChiPai(temp_list_chu,play5)
 # print play5
-Chu_De_Pai = [(3,'heitao'),(3,'hongtao'),(3,'ho_caohua'),(4,'ho_fangkuai'),(4,'heitao'),(4,'heitao'),(5,'heitao'),(5,'heitao'),(6,'heitao'),(6,'heitao')]
-chi = ChiPai(Chu_De_Pai,play5)
-print play5
-print chi
-# print play1
+# print chi
+# # print play1
 
 
 #出牌规则
 
-def ChuPai(Chu_De_Pai,play):
-    play.remove(Chu_De_Pai)
+def ChuPai(temp_list_chu,play):
+    for x in temp_list_chu:
+        play.remove(x)
     return play
 # print play1
 # play1 = ChuPai(play1[0],play1)
@@ -633,8 +649,8 @@ def ChuPai(Chu_De_Pai,play):
 
 # if (3,'heitao') in play1:
 #     print 1
-#     Chu_De_Pai = (3,'heitao')
-#     play1 = ChuPai(Chu_De_Pai,play1)
+#     temp_list_chu = (3,'heitao')
+#     play1 = ChuPai(temp_list_chu,play1)
 #     print play1
 # else:
 #     print 'not heitao 3'
@@ -650,11 +666,447 @@ def ChuPai(Chu_De_Pai,play):
 # else:
 #     print '黑桃三不在你的受伤，现在由机器人3首先出牌'
 #     print '机器人3出的牌是：',play2[0]
+
+#管不上以后随机出牌，或者首次出牌(本来想用random随机的，时间关系，先这样吧)
+def Suiji_chupai(play):
+    temp_list_chu = []
+    temp_dan = Find_Dan(play)
+    if temp_dan:
+        len_dan = len(temp_dan)
+    else:
+        len_dan = 0
+    temp_duizi = Find_DuiZi(play)
+    if temp_duizi:
+            len_duizi = len(temp_duizi)
+    else:
+        len_duizi = 0
+    temp_san = Find_San(play)
+    if temp_san:
+        len_san = len(temp_san)
+    else:
+        len_san = 0
+    temp_zha = Find_Zha(play)
+    if temp_zha:
+        len_zha = len(temp_zha)
+    else:
+        len_zha = 0
+    temp_shun = Find_Shunzi(play)
+    if temp_shun:
+        len_shun = len(temp_shun)
+    else:
+        len_shun = 0
+    temp_liandui = Find_Liandui(play)
+    if temp_liandui:
+        len_liandui = len(temp_liandui)
+    else:
+        len_liandui = 0
+    temp_feiji = Find_feiji(play)
+    if temp_feiji:
+        len_feiji = len(temp_feiji)
+    else:
+        len_feiji = 0
+    if (3,'heitao') in play:
+        #时间紧急，先不考虑大于5张的顺子
+        if ((len_shun) and ((3,'heitao') in temp_shun)):
+            temp_list_chu.append(temp_shun[0])
+            temp_list_chu.append(temp_shun[1])
+            temp_list_chu.append(temp_shun[2])
+            temp_list_chu.append(temp_shun[3])
+            temp_list_chu.append(temp_shun[4])
+            for x in temp_list_chu:
+                play.remove(x)
+            return temp_list_chu
+        elif (3,'heitao') in temp_dan:
+            temp_list_chu.append((3,'heitao'))
+            for x in temp_list_chu:
+                play.remove(x)
+            return temp_list_chu
+        elif (3,'heitao') in temp_duizi:
+            if ((len_liandui) and ((3,'heitao') in temp_liandui)):
+                temp_list_chu.append(temp_liandui[0])
+                temp_list_chu.append(temp_liandui[1])
+                temp_list_chu.append(temp_liandui[2])
+                temp_list_chu.append(temp_liandui[3])
+                temp_list_chu.append(temp_liandui[4])
+                temp_list_chu.append(temp_liandui[5])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+            else:
+                temp_list_chu.append(temp_duizi[0])
+                temp_list_chu.append(temp_duizi[1])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+        elif (3,'heitao') in temp_san:
+            if len_feiji:
+                if (3,'heitao') in temp_feiji:
+                    temp_list_chu.append(temp_san[0])
+                    temp_list_chu.append(temp_san[1])
+                    temp_list_chu.append(temp_san[2])
+                    temp_list_chu.append(temp_san[3])
+                    temp_list_chu.append(temp_san[4])
+                    temp_list_chu.append(temp_san[5])
+                    if len_dan > 1:
+                        temp_list_chu.append(temp_dan[0])
+                        temp_list_chu.append(temp_dan[1])
+                        for x in temp_list_chu:
+                            play.remove(x)
+                        return temp_list_chu
+                    elif len_duizi > 2:
+                        temp_list_chu.append(temp_duizi[0])
+                        temp_list_chu.append(temp_duizi[1])
+                        temp_list_chu.append(temp_duizi[2])
+                        temp_list_chu.append(temp_duizi[3])
+                        for x in temp_list_chu:
+                            play.remove(x)
+                        return temp_list_chu
+                else:
+                    if (((3,'heitao') in temp_dan) and (len_dan > 1)):
+                        temp_list_chu.append(temp_feiji[0])
+                        temp_list_chu.append(temp_feiji[1])
+                        temp_list_chu.append(temp_feiji[2])
+                        temp_list_chu.append(temp_feiji[3])
+                        temp_list_chu.append(temp_feiji[4])
+                        temp_list_chu.append(temp_feiji[5])
+                        temp_list_chu.append(temp_dan[0])
+                        temp_list_chu.append(temp_dan[1])
+                        for x in temp_list_chu:
+                            play.remove(x)
+                        return temp_list_chu
+                    elif (((3,'heitao') in temp_duizi) and (len_duizi > 2)):
+                        temp_list_chu.append(temp_feiji[0])
+                        temp_list_chu.append(temp_feiji[1])
+                        temp_list_chu.append(temp_feiji[2])
+                        temp_list_chu.append(temp_feiji[3])
+                        temp_list_chu.append(temp_feiji[4])
+                        temp_list_chu.append(temp_feiji[5])
+                        temp_list_chu.append(temp_duizi[0])
+                        temp_list_chu.append(temp_duizi[1])
+                        temp_list_chu.append(temp_duizi[2])
+                        temp_list_chu.append(temp_duizi[3])
+                        for x in temp_list_chu:
+                            play.remove(x)
+                        return temp_list_chu
+            else:
+                temp_list_chu.append(temp_san[0])
+                temp_list_chu.append(temp_san[1])
+                temp_list_chu.append(temp_san[2])
+                if len_dan:
+                    temp_list_chu.append(temp_dan[0])
+                    for x in temp_list_chu:
+                        play.remove(x)
+                    return temp_list_chu
+                elif len_duizi:
+                    temp_list_chu.append(temp_duizi[0])
+                    temp_list_chu.append(temp_duizi[1])
+                    for x in temp_list_chu:
+                        play.remove(x)
+                    return temp_list_chu
+        elif ((len_san) and ((3,'heitao') in temp_dan)):
+            temp_list_chu.append(temp_san[0])
+            temp_list_chu.append(temp_san[1])
+            temp_list_chu.append(temp_san[2])
+            temp_list_chu.append(temp_dan[0])
+            for x in temp_list_chu:
+                play.remove(x)
+            return temp_list_chu
+        elif((len_san) and ((3,'heitao') in temp_duizi)):
+            temp_list_chu.append(temp_san[0])
+            temp_list_chu.append(temp_san[1])
+            temp_list_chu.append(temp_san[2])
+            temp_list_chu.append(temp_duizi[0])
+            temp_list_chu.append(temp_duizi[1])
+            for x in temp_list_chu:
+                play.remove(x)
+            return temp_list_chu
+        elif temp_zha:
+            if (3,'heitao') in temp_zha:
+                temp_list_chu.append(temp_zha[0])
+                temp_list_chu.append(temp_zha[1])
+                temp_list_chu.append(temp_zha[2])
+                temp_list_chu.append(temp_zha[3])
+                if len_dan > 1:
+                    temp_list_chu.append(temp_dan[0])
+                    temp_list_chu.append(temp_dan[1])
+                    for x in temp_list_chu:
+                        play.remove(x)
+                    return temp_list_chu
+                elif len_duizi > 2:
+                    temp_list_chu.append(temp_duizi[0])
+                    temp_list_chu.append(temp_duizi[1])
+                    temp_list_chu.append(temp_duizi[2])
+                    temp_list_chu.append(temp_duizi[3])
+                    for x in temp_list_chu:
+                        play.remove(x)
+                    return temp_list_chu
+
+
+    else:
+        temp_list_chu = []
+        if len_shun:
+            temp_list_chu.append(temp_shun[0])
+            temp_list_chu.append(temp_shun[1])
+            temp_list_chu.append(temp_shun[2])
+            temp_list_chu.append(temp_shun[3])
+            temp_list_chu.append(temp_shun[4])
+            for x in temp_list_chu:
+                play.remove(x)
+            return temp_list_chu
+        elif len_san:
+            if len_dan:
+                temp_list_chu.append(temp_san[0])
+                temp_list_chu.append(temp_san[1])
+                temp_list_chu.append(temp_san[2])
+                temp_list_chu.append(temp_dan[0])
+                for x in temp_list_chu:
+                    # print x
+                    play.remove(x)
+                return temp_list_chu
+            elif len_duizi:
+                temp_list_chu.append(temp_san[0])
+                temp_list_chu.append(temp_san[1])
+                temp_list_chu.append(temp_san[2])
+                temp_list_chu.append(temp_duizi[0])
+                temp_list_chu.append(temp_duizi[1])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+            else:
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+        elif len_feiji:
+            temp_list_chu.append(temp_feiji[0])
+            temp_list_chu.append(temp_feiji[1])
+            temp_list_chu.append(temp_feiji[2])
+            temp_list_chu.append(temp_feiji[3])
+            temp_list_chu.append(temp_feiji[4])
+            temp_list_chu.append(temp_feiji[5])
+            if len_dan > 1:
+                temp_list_chu.append(temp_dan[0])
+                temp_list_chu.append(temp_dan[1])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+            elif len_duizi > 2:
+                temp_list_chu.append(temp_duizi[0])
+                temp_list_chu.append(temp_duizi[1])
+                temp_list_chu.append(temp_duizi[2])
+                temp_list_chu.append(temp_duizi[3])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+            else:
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+        elif len_zha:
+            temp_list_chu.append(temp_zha[0])
+            temp_list_chu.append(temp_zha[1])
+            temp_list_chu.append(temp_zha[2])
+            temp_list_chu.append(temp_zha[3])
+            if len_dan > 1:
+                temp_list_chu.append(temp_dan[0])
+                temp_list_chu.append(temp_dan[1])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+            elif len_duizi > 2:
+                temp_list_chu.append(temp_duizi[0])
+                temp_list_chu.append(temp_duizi[1])
+                temp_list_chu.append(temp_duizi[2])
+                temp_list_chu.append(temp_duizi[3])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+            else:
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+        elif len_dan:
+            temp_list_chu.append(temp_dan[0])
+            play.remove(temp_dan[0])
+            return temp_list_chu
+        elif len_duizi:
+            if len_liandui:
+                temp_list_chu.append(temp_liandui[0])
+                temp_list_chu.append(temp_liandui[1])
+                temp_list_chu.append(temp_liandui[2])
+                temp_list_chu.append(temp_liandui[3])
+                temp_list_chu.append(temp_liandui[4])
+                temp_list_chu.append(temp_liandui[5])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+            else:
+                temp_list_chu.append(temp_duizi[0])
+                temp_list_chu.append(temp_duizi[1])
+                for x in temp_list_chu:
+                    play.remove(x)
+                return temp_list_chu
+#测试随机出牌
+
+# print play1
 #
+# suiji = Suiji_chupai(play1)
+#
+# print suiji
+# print play1
+
+
+#出牌顺序循环
+
+def Shunxu_chupai(play1,play2,play3):
+    temp_list_chu = []
+    if play1:
+        len_play1 = len(play1)
+    else:
+        len_play1 = 0
+    if play2:
+        len_play2 = len(play2)
+    else:
+        len_play2 = 0
+    if play3:
+        len_play3 = len(play3)
+    else:
+        len_play3 = 0
+    print play1
+    print play2
+    print play3
+
+    if (3,'heitao') in (play1):
+        while play1 or play2 or play3:
+            temp_list_chu = Suiji_chupai(play1)
+            print temp_list_chu
+            temp_list_chu = ChiPai(temp_list_chu,play2)
+            print temp_list_chu
+
+            if len_Chudepai:
+                temp_list_chu = ChiPai(temp_list_chu,play3)
+            print temp_list_chu
+    # elif(3,'heitao') in (play2):
+    #     while play1 or play2 or play3:
+    #         temp_list_chu = Suiji_chupai(play2)
+    #         print temp_list_chu
+    #         temp_list_chu = ChiPai(temp_list_chu,play3)
+    #         print temp_list_chu
+    #         temp_list_chu = ChiPai(temp_list_chu,play1)
+    #         print temp_list_chu
+    # else:
+    #     while play1 or play2 or play3:
+    #         temp_list_chu = Suiji_chupai(play3)
+    #         print temp_list_chu
+    #         temp_list_chu = ChiPai(temp_list_chu,play1)
+    #         print temp_list_chu
+    #         temp_list_chu = ChiPai(temp_list_chu,play2)
+    #         print temp_list_chu
 
 
 
 
+
+
+#测试顺序
+# shunxu = Shunxu_chupai(play1,play2,play3)
+# print shunxu
+# print play1
+# print play2
+# print play3
+
+
+# if play3:
+#     len_play3 = len(play3)
+# else:
+#     len_play3 = 0
+if (3,'heitao') in (play1):
+    # print play1
+    chudepai = []
+    chudepai1 = Suiji_chupai(play1)
+    print 'play1 chu de pai:',chudepai1
+    print len(play1)
+    if play1:
+        len_play1 = len(play1)
+    else:
+        len_play1 = 0
+    # print len_play1
+    if play2:
+        len_play2 = len(play2)
+    else:
+        len_play2 = 0
+    if play3:
+        len_play3 = len(play3)
+    else:
+        len_play3 = 0
+
+    while ((len_play1) and (len_play2) and (len_play3)):
+    #
+        chudepai2 = ChiPai(chudepai1,play2)
+
+        if chudepai2:
+            len_play2 = len(chudepai2)
+        else:
+            len_paly2 = 0
+        print 'play2 chu de pai:',chudepai2
+        print play2,len_play2
+
+        if len_play2 == 0:
+            chudepai3 = ChiPai(chudepai1,play3)
+        else:
+            chudepai3 = ChiPai(chudepai2,play3)
+
+        if chudepai3:
+            len_play3 = len(chudepai3)
+        else:
+            len_play3 = 0
+        print 'play3 chu de pai:',chudepai3
+        print play3,len_play3
+
+        if len_play3 == 0:
+            chudepai1 = Suiji_chupai(play1)
+        else:
+            chudepai1 = ChiPai(chudepai3,play1)
+
+        print 'play1 chu de pai:',chudepai1
+        print play1,len_play1
+
+        # print 'play2 chu de pai:',chudepai
+        # print play2
+        # if play2:
+        #     len_play2 = len(play2)
+        # else:
+        #     len_play2 = 0
+        # print len_play2
+        #
+        # chudepai = ChiPai(chudepai,play3)
+        # print 'play3 chu de pai:',chudepai
+        # print play3
+        # if play3:
+        #     len_play3 = len(play3)
+        # else:
+        #     len_play3 = 0
+        # print len_play3
+        #
+        # chudepai = ChiPai(chudepai,play1)
+        # print 'play1 chu de pai:',chudepai
+        # if play1:
+        #     len_play1 = len(play1)
+        # else:
+        #     len_play1 = 0
+        # print len_play1
+    #     chudepai = ChiPai(chudepai,play3,play2)
+    #     print 'play3 chu de pai:',chudepai
+    #     print play3,len_play3
+    #     chudepai = ChiPai(chudepai,play1,play3)
+    #     print 'play1 chu de pai:',chudepai
+    #     print play1,len_play1
+    #
+    # if len_play1 == 0:
+    #     print 'play1 win'
+    # if len_play2 == 0:
+    #     print 'play2 win'
+    # if len_play3 == 0:
+    #     print 'play3 win'
 
 
 
