@@ -39,13 +39,13 @@ play3 = sorted(pai[32:])
 
 
 
-#规则1，比大小
-def BiDaXiao(a,b):
-    if b > a:
-        return b
-# print play1[0],play2[0]
-# bj = BiDaXiao(play1[0],play2[3])
-# print bj
+# #规则1，比大小
+# def BiDaXiao(a,b):
+#     if b > a:
+#         return b
+# # print play1[0],play2[0]
+# # bj = BiDaXiao(play1[0],play2[3])
+# # print bj
 
 
 #规则2，单，对子，三带一，三带一对，炸，四带一，四带二
@@ -268,7 +268,7 @@ def ChiPai(temp_list_chu,play):
     temp_zha = Find_Zha(play)
     if temp_zha:
         len_zha = len(temp_zha)
-        print 'youzha!'
+        # print 'youzha!'
     else:
         len_zha = 0
     if temp_list_chu:
@@ -317,12 +317,14 @@ def ChiPai(temp_list_chu,play):
         temp_list_San = Find_San(play)
         ##print 'duizi liebiao:',temp_list_duizi
         # print temp_list_chu[0][0],temp_list_duizi
+
         if (len(temp_list_duizi) != 0):
-            for x in range(0,len(temp_list_duizi),2):
-                temp_list_duizi_a = temp_list_duizi[x][0]
+            for x in range(0,(len(temp_list_duizi)-2),2):
+                temp_list_duizi_a = temp_list_duizi[x]
                 # print temp_list_chu[0]
-                temp_list_chu_a = temp_list_chu[0][0]
-                if (temp_list_duizi_a > temp_list_chu_a):
+                # print temp_list_duizi_a
+
+                if ((temp_list_duizi_a) > temp_list_chu[0]):
                     temp_list.append(temp_list_duizi[x])
                     temp_list.append(temp_list_duizi[x+1])
                     for x in temp_list:
@@ -615,9 +617,9 @@ def ChiPai(temp_list_chu,play):
 
 # 测试吃牌规则
 # play5 = [(4,'heitao'),(4,'hongtao'),(4,'heitao'),(5,'heitao'),(5,'hongtao'),(5,'heitao'),(8,'heitao'),(8,'heitao'),(10,'heitao'),(10,'hongtao')]
-#
-# # print play1
-# # print Find_DuiZi(play1)
+
+# print play1
+# print Find_DuiZi(play1)
 # #调试吃牌
 # # zha = Find_Zha(play1)
 # # if zha:
@@ -625,7 +627,7 @@ def ChiPai(temp_list_chu,play):
 # # else:
 # #     print 'meiyouzha!'
 # # print play5
-# temp_list_chu = [(3,'heitao'),(3,'hongtao'),(3,'ho_caohua'),(4,'ho_fangkuai'),(4,'heitao'),(4,'heitao'),(5,'heitao'),(5,'heitao'),(6,'heitao'),(6,'heitao')]
+# temp_list_chu = [(6,'heitao'),(6,'heitao')]
 # chi = ChiPai(temp_list_chu,play5)
 # print play5
 # print chi
@@ -1019,12 +1021,28 @@ def Shunxu_chupai(play1,play2,play3):
 #     len_play3 = len(play3)
 # else:
 #     len_play3 = 0
+
+
+
+
 if (3,'heitao') in (play1):
     # print play1
-    chudepai = []
+    print play1
+    print play2
+    print play3
+
+    chudepai1 = []
+    chudepai2 = []
+    chudepai3 = []
+
     chudepai1 = Suiji_chupai(play1)
-    print 'play1 chu de pai:',chudepai1
-    print len(play1)
+    chudepai = chudepai1
+    if chudepai:
+        len_chudepai = len(chudepai)
+    else:
+        len_chudepai = 0
+    print 'play1 have heitao3,play1 chu de pai:',chudepai1
+    # print len(play1)
     if play1:
         len_play1 = len(play1)
     else:
@@ -1039,36 +1057,103 @@ if (3,'heitao') in (play1):
     else:
         len_play3 = 0
 
-    while ((len_play1) and (len_play2) and (len_play3)):
-    #
-        chudepai2 = ChiPai(chudepai1,play2)
-
-        if chudepai2:
-            len_play2 = len(chudepai2)
+    while (play1) and (play2) and (play3) and (chudepai):
+        if chudepai == chudepai2:
+            chudepai2 = Suiji_chupai(play2)
+            chudepai = chudepai2
+            print 'nimelia dou yaobuqi play2 chude pai is:',chudepai2
+            # print chudepai,chudepai1,chudepai2,chudepai3
         else:
-            len_paly2 = 0
-        print 'play2 chu de pai:',chudepai2
-        print play2,len_play2
+            chudepai2 = ChiPai(chudepai, play2)
+            if chudepai2:
+                print 'play2 chu de pai:', chudepai2
+                chudepai = chudepai2
+            else:
+                print 'play2 yaobuqi'
+        print 'play2 is:',play2
 
-        if len_play2 == 0:
-            chudepai3 = ChiPai(chudepai1,play3)
+
+
+        if chudepai == chudepai3:
+            chudepai3 = Suiji_chupai(play3)
+            chudepai = chudepai3
+            print 'nimelia dou yaobuqi play3 chude pai is:', chudepai3
+            # print chudepai, chudepai1, chudepai2, chudepai3
         else:
-            chudepai3 = ChiPai(chudepai2,play3)
+            chudepai3 = ChiPai(chudepai, play3)
+            if chudepai3:
+                print 'play3 chu de pai:', chudepai3
+                chudepai = chudepai3
+            else:
+                print 'play3 yaobuqi'
+        print 'play3 is:',play3
 
-        if chudepai3:
-            len_play3 = len(chudepai3)
-        else:
-            len_play3 = 0
-        print 'play3 chu de pai:',chudepai3
-        print play3,len_play3
 
-        if len_play3 == 0:
+
+
+
+        if chudepai == chudepai1:
             chudepai1 = Suiji_chupai(play1)
+            chudepai = chudepai1
+            print 'nimelia dou yaobuqi play1 chude pai is:', chudepai1
+            # print chudepai,chudepai1,chudepai2,chudepai3
         else:
-            chudepai1 = ChiPai(chudepai3,play1)
+            chudepai1 = ChiPai(chudepai3, play1)
+            if chudepai1:
+                print 'play1 chu de pai:', chudepai1
+                chudepai = chudepai1
+            else:
+                print 'play1 yaobuqi'
+        print 'play1 is:',play1
 
-        print 'play1 chu de pai:',chudepai1
-        print play1,len_play1
+    print len_play1,len_play2,len_play3
+    print play1
+    print play2
+    print play3
+    if len_play1 == 0:
+        print 'winner is play1'
+    elif len_play2 == 0:
+        print 'winner is play2'
+    else:
+        print 'winner is play3'
+
+
+
+        #
+        # # print play2,len_play2
+        #
+        # chudepai3 = ChiPai(chudepai2,play3)
+        #
+        # if chudepai3:
+        #     len_play3 == len(chudepai3)
+        # else:
+        #     len_play3 == 0
+        # if len_play3 == 0:
+        #     print 'play3 yaobuqi'
+        #     chudepai3 = chudepai2
+        #
+        # else:
+        #     print 'play3 chu de pai:',chudepai3
+        #
+        # if chudepai3 == chudepai1:
+        #     chudepai1 = Suiji_chupai(play1)
+        #     print 'nimalia dou yaobuqi ,play1 chu de pai is:'chudepai1
+        # else:
+        #     chudepai1 = ChiPai(chudepai3,play1)
+        #     print 'play1 chu de pai is:',chudepai1
+
+#
+
+    #判断是不是自己刚刚出的那张牌（意思是刚刚出的那张牌，另外两个人都要不起）
+        #不是刚刚那张拍
+            # 判断能不能吃
+                #能吃  吃
+                #不能吃 输出要不起
+        #是刚刚那张拍
+            #随机出牌
+
+
+        # print play1,len_play1
 
         # print 'play2 chu de pai:',chudepai
         # print play2
